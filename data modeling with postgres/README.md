@@ -1,1 +1,1 @@
-Data Modelling using Postgre database
+Data Modeling using Postgre database
