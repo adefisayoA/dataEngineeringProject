@@ -12,7 +12,7 @@ time_table_drop = "Drop TABLE IF EXISTS time"
 songplay_table_create = ("""
 CREATE TABLE IF NOT EXISTS songplays (
     songplay_id SERIAL PRIMARY KEY ,
-    start_time TIMESTAMP with time zone NOT NULL,
+    start_time timestamp with time zone NOT NULL,
     user_id INTEGER NOT NULL,
     level VARCHAR(15),
     song_id VARCHAR(25),
@@ -59,7 +59,7 @@ CREATE TABLE IF NOT EXISTS artists (
 #dimension table - time 
 time_table_create = ("""
 CREATE TABLE IF NOT EXISTS time (
-    start_time TIMESTAMP  with time zone PRIMARY KEY,
+    start_time TIMESTAMP with time zone PRIMARY KEY,
     hour INTEGER,
     day INTEGER,
     week INTEGER,
