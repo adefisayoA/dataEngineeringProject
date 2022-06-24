@@ -9,28 +9,44 @@ time_table_drop = "Drop TABLE IF EXISTS time"
 # CREATE TABLES
 
 # fact table - data about song
+# songplay_table_create = ("""
+# CREATE TABLE IF NOT EXISTS songplays (
+#     songplay_id int PRIMARY KEY ,
+#     start_time timestamp with time zone NOT NULL,
+#     user_id INTEGER NOT NULL,
+#     level VARCHAR(15),
+#     song_id VARCHAR(25),
+#     artist_id VARCHAR(25),
+#     session_id INTEGER,
+#     location VARCHAR(50),
+#     user_agent VARCHAR(150)
+# );
+# """)
+
+# fact table - data about song
 songplay_table_create = ("""
 CREATE TABLE IF NOT EXISTS songplays (
-    songplay_id SERIAL PRIMARY KEY ,
-    start_time timestamp with time zone NOT NULL,
-    user_id INTEGER NOT NULL,
-    level VARCHAR(15),
-    song_id VARCHAR(25),
-    artist_id VARCHAR(25),
-    session_id INTEGER,
+    songplay_id int PRIMARY KEY ,
+    start_time timestamp NOT NULL,
+    user_id INTEGER NOT NULL REFERENCES users (user_id),
+    level VARCHAR(15) not null,
+    song_id VARCHAR(25) REFERENCES songs (song_id),
+    artist_id VARCHAR(25) REFERENCES artists (artist_id),
+    session_id INTEGER not null,
     location VARCHAR(50),
     user_agent VARCHAR(150)
 );
 """)
 
-#dimension table - user 
+
+#dimension table - user
 user_table_create = ("""
 CREATE TABLE IF NOT EXISTS users (
     user_id INTEGER PRIMARY KEY,
-    first_name VARCHAR(50),
-    last_name VARCHAR(50),
+    first_name VARCHAR(50) not null,
+    last_name VARCHAR(50) not null,
     gender CHAR(1),
-    level VARCHAR(15)
+    level VARCHAR(15) not null
 );
 """)
 
@@ -39,13 +55,13 @@ song_table_create = ("""
 CREATE TABLE IF NOT EXISTS songs (
     song_id VARCHAR(25) PRIMARY KEY,
     title VARCHAR(100) NOT NULL,
-    artist_id VARCHAR(25) NOT NULL,
+    artist_id VARCHAR(25) NOT NULL REFERENCES artists(artist_id),
     year INTEGER NOT NULL,
-    duration FLOAT(5) NOT NULL
+    duration FLOAT NOT NULL
 );
 """)
 
-#dimension table - artist 
+#dimension table - artist
 artist_table_create = ("""
 CREATE TABLE IF NOT EXISTS artists (
     artist_id VARCHAR(25) PRIMARY KEY,
@@ -56,18 +72,31 @@ CREATE TABLE IF NOT EXISTS artists (
 );
 """)
 
-#dimension table - time 
+#dimension table - time
+# time_table_create = ("""
+# CREATE TABLE IF NOT EXISTS time (
+#     start_time TIMESTAMP with time zone PRIMARY KEY,
+#     hour INTEGER not null,
+#     day INTEGER not null,
+#     week INTEGER not null,
+#     month INTEGER not null,
+#     year INTEGER not null,
+#     weekday INTEGER not null
+# );
+# """)
+
 time_table_create = ("""
-CREATE TABLE IF NOT EXISTS time (
-    start_time TIMESTAMP with time zone PRIMARY KEY,
-    hour INTEGER,
-    day INTEGER,
-    week INTEGER,
-    month INTEGER,
-    year INTEGER,
-    weekday INTEGER
-);
+    CREATE TABLE IF NOT EXISTS time (
+        start_time TIMESTAMP PRIMARY KEY,
+        hour NUMERIC NOT NULL,
+        day NUMERIC NOT NULL,
+        week NUMERIC NOT NULL,
+        month NUMERIC NOT NULL,
+        year NUMERIC NOT NULL,
+        weekday NUMERIC NOT NULL
+    )
 """)
+
 
 # INSERT RECORDS
 
@@ -75,6 +104,10 @@ songplay_table_insert = ("""
 INSERT INTO songplays (songplay_id, start_time, user_id, level, song_id, artist_id, session_id, location, user_agent)
 VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
 ON CONFLICT(songplay_id) DO NOTHING;
+
+-- alter table songplays alter column song_id set not null; 
+-- alter table songplays alter column artist_id set not null; 
+
 """)
 
 user_table_insert = ("""
@@ -111,5 +144,5 @@ AND songs.duration = %s
 
 # QUERY LISTS
 
-create_table_queries = [songplay_table_create, user_table_create, song_table_create, artist_table_create, time_table_create]
+create_table_queries = [time_table_create, user_table_create, artist_table_create, song_table_create, songplay_table_create]
 drop_table_queries = [songplay_table_drop, user_table_drop, song_table_drop, artist_table_drop, time_table_drop]
